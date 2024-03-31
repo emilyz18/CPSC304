@@ -99,7 +99,7 @@ CREATE TABLE User_Contact_Info (
 	ON DELETE CASCADE
 );
 
-CREATE TABLE User (
+CREATE TABLE User_Info (
   email VARCHAR2(30), 
   ID CHAR(8),
   name VARCHAR2(20),
@@ -114,7 +114,7 @@ CREATE TABLE "In" (
   PRIMARY KEY (country, ID),
   FOREIGN KEY (country) REFERENCES Financial_Market2
 	ON DELETE CASCADE,
-  FOREIGN KEY (ID) REFERENCES User
+  FOREIGN KEY (ID) REFERENCES User_Info
 	ON DELETE CASCADE
 );
 
@@ -126,7 +126,7 @@ CREATE TABLE Has_Account (
   ID CHAR(8) NOT NULL,
   UNIQUE (ID),
   PRIMARY KEY (accountID),
-  FOREIGN KEY (ID) REFERENCES User
+  FOREIGN KEY (ID) REFERENCES User_Info
 	ON DELETE CASCADE
 );
 
@@ -267,6 +267,11 @@ CREATE TABLE Includes_Bond(
 	ON DELETE CASCADE
 );
 
+
+
+
+---- INSERT DATA ----
+
 INSERT INTO Financial_Market1 (startingHour, endingHour) VALUES (TO_TIMESTAMP('1970-01-01 08:00:00', 'YYYY-MM-DD HH24:MI:SS'), TO_TIMESTAMP('1970-01-01 16:00:00', 'YYYY-MM-DD HH24:MI:SS'));
 INSERT INTO Financial_Market1 (startingHour, endingHour) VALUES (TO_TIMESTAMP('1970-01-01 09:00:00', 'YYYY-MM-DD HH24:MI:SS'), TO_TIMESTAMP('1970-01-01 17:00:00', 'YYYY-MM-DD HH24:MI:SS'));
 INSERT INTO Financial_Market1 (startingHour, endingHour) VALUES (TO_TIMESTAMP('1970-01-01 07:00:00', 'YYYY-MM-DD HH24:MI:SS'), TO_TIMESTAMP('1970-01-01 15:00:00', 'YYYY-MM-DD HH24:MI:SS'));
@@ -305,11 +310,11 @@ INSERT INTO User_Contact_Info (email, address) VALUES ('BobWayne34@gmail.com', '
 INSERT INTO User_Contact_Info (email, address) VALUES ('KateL09@hotmail.com', '99 Marine Drive');
 INSERT INTO User_Contact_Info (email, address) VALUES ('MikeDo98@msn.com', '654 Maple St');
 
-INSERT INTO User (email, ID, name) VALUES ('JohnKent01@yahoo.com', 'U5H9P2Z3', 'John Kent');
-INSERT INTO User (email, ID, name) VALUES ('AliceG23@gmail.com', 'U8F4Q1W7', 'Alice Green');
-INSERT INTO User (email, ID, name) VALUES ('BobWayne34@gmail.com', 'U2T6K9Y4', 'Bob Wayne');
-INSERT INTO User (email, ID, name) VALUES ('KateL09@hotmail.com', 'U3V7M1X8', 'Kate Lee');
-INSERT INTO User (email, ID, name) VALUES ('MikeDo98@msn.com', 'U6N2D5B9', 'Michael Do');
+INSERT INTO User_Info (email, ID, name) VALUES ('JohnKent01@yahoo.com', 'U5H9P2Z3', 'John Kent');
+INSERT INTO User_Info (email, ID, name) VALUES ('AliceG23@gmail.com', 'U8F4Q1W7', 'Alice Green');
+INSERT INTO User_Info (email, ID, name) VALUES ('BobWayne34@gmail.com', 'U2T6K9Y4', 'Bob Wayne');
+INSERT INTO User_Info (email, ID, name) VALUES ('KateL09@hotmail.com', 'U3V7M1X8', 'Kate Lee');
+INSERT INTO User_Info (email, ID, name) VALUES ('MikeDo98@msn.com', 'U6N2D5B9', 'Michael Do');
 
 INSERT INTO "In" (country, ID) VALUES ('USA', 'U5H9P2Z3');
 INSERT INTO "In" (country, ID) VALUES ('China', 'U8F4Q1W7');
