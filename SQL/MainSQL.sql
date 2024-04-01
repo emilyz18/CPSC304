@@ -54,18 +54,18 @@ END;
 
 -- Start Create Table
 
-CREATE TABLE Financial_Market1(
+CREATE TABLE Financial_Market_Hours(
   startingHour TIMESTAMP,
   endingHour TIMESTAMP,
   PRIMARY KEY (startingHour)
 );
 
-CREATE TABLE Financial_Market2(
+CREATE TABLE Financial_Market_Info(
   startingHour TIMESTAMP,
   country VARCHAR2(40),
   marketDate DATE,
   PRIMARY KEY (country),
-  FOREIGN KEY (startingHour) REFERENCES Financial_Market1
+  FOREIGN KEY (startingHour) REFERENCES Financial_Market_Hours
 	ON DELETE CASCADE
 );
 
@@ -73,7 +73,7 @@ CREATE TABLE Stock_Market (
   country VARCHAR2(40),
   numberOfStocks VARCHAR2(15),
   PRIMARY KEY (country),
-  FOREIGN KEY (country) REFERENCES Financial_Market2
+  FOREIGN KEY (country) REFERENCES Financial_Market_Info
 	ON DELETE CASCADE
 );
 
@@ -81,7 +81,7 @@ CREATE TABLE Bond_Market(
   country VARCHAR2(40),
   numberOfBonds VARCHAR2(15),
   PRIMARY KEY (country),
-  FOREIGN KEY (country) REFERENCES Financial_Market2
+  FOREIGN KEY (country) REFERENCES Financial_Market_Info
 	ON DELETE CASCADE
 );
 
@@ -108,11 +108,11 @@ CREATE TABLE User_Info (
 	ON DELETE CASCADE
 );
 
-CREATE TABLE "In" (
+CREATE TABLE User_In_Financial (
   country VARCHAR2(40),
   ID CHAR(8),
   PRIMARY KEY (country, ID),
-  FOREIGN KEY (country) REFERENCES Financial_Market2
+  FOREIGN KEY (country) REFERENCES Financial_Market_Info
 	ON DELETE CASCADE,
   FOREIGN KEY (ID) REFERENCES User_Info
 	ON DELETE CASCADE
@@ -162,7 +162,7 @@ CREATE TABLE Have_Stock (
   country VARCHAR2(40),
   stockID VARCHAR2(10),
   PRIMARY KEY (country, stockID),
-  FOREIGN KEY (country) REFERENCES Financial_Market2
+  FOREIGN KEY (country) REFERENCES Financial_Market_Info
 	ON DELETE CASCADE,
   FOREIGN KEY (stockID) REFERENCES Owns_PTC_Stock_Stock
 	ON DELETE CASCADE
@@ -179,7 +179,7 @@ CREATE TABLE Have_Bond (
   country VARCHAR2(40),
   bondID CHAR(10),
   PRIMARY KEY (country, bondID),
-  FOREIGN KEY (country) REFERENCES Financial_Market2
+  FOREIGN KEY (country) REFERENCES Financial_Market_Info
 	ON DELETE CASCADE,
   FOREIGN KEY (bondID) REFERENCES Bond
 	ON DELETE CASCADE
@@ -272,18 +272,18 @@ CREATE TABLE Includes_Bond(
 
 ---- INSERT DATA ----
 
-INSERT INTO Financial_Market1 (startingHour, endingHour) VALUES (TO_TIMESTAMP('1970-01-01 08:00:00', 'YYYY-MM-DD HH24:MI:SS'), TO_TIMESTAMP('1970-01-01 16:00:00', 'YYYY-MM-DD HH24:MI:SS'));
-INSERT INTO Financial_Market1 (startingHour, endingHour) VALUES (TO_TIMESTAMP('1970-01-01 09:00:00', 'YYYY-MM-DD HH24:MI:SS'), TO_TIMESTAMP('1970-01-01 17:00:00', 'YYYY-MM-DD HH24:MI:SS'));
-INSERT INTO Financial_Market1 (startingHour, endingHour) VALUES (TO_TIMESTAMP('1970-01-01 07:00:00', 'YYYY-MM-DD HH24:MI:SS'), TO_TIMESTAMP('1970-01-01 15:00:00', 'YYYY-MM-DD HH24:MI:SS'));
-INSERT INTO Financial_Market1 (startingHour, endingHour) VALUES (TO_TIMESTAMP('1970-01-01 10:00:00', 'YYYY-MM-DD HH24:MI:SS'), TO_TIMESTAMP('1970-01-01 18:00:00', 'YYYY-MM-DD HH24:MI:SS'));
-INSERT INTO Financial_Market1 (startingHour, endingHour) VALUES (TO_TIMESTAMP('1970-01-01 06:00:00', 'YYYY-MM-DD HH24:MI:SS'), TO_TIMESTAMP('1970-01-01 14:00:00', 'YYYY-MM-DD HH24:MI:SS'));
+INSERT INTO Financial_Market_Hours (startingHour, endingHour) VALUES (TO_TIMESTAMP('1970-01-01 08:00:00', 'YYYY-MM-DD HH24:MI:SS'), TO_TIMESTAMP('1970-01-01 16:00:00', 'YYYY-MM-DD HH24:MI:SS'));
+INSERT INTO Financial_Market_Hours (startingHour, endingHour) VALUES (TO_TIMESTAMP('1970-01-01 09:00:00', 'YYYY-MM-DD HH24:MI:SS'), TO_TIMESTAMP('1970-01-01 17:00:00', 'YYYY-MM-DD HH24:MI:SS'));
+INSERT INTO Financial_Market_Hours (startingHour, endingHour) VALUES (TO_TIMESTAMP('1970-01-01 07:00:00', 'YYYY-MM-DD HH24:MI:SS'), TO_TIMESTAMP('1970-01-01 15:00:00', 'YYYY-MM-DD HH24:MI:SS'));
+INSERT INTO Financial_Market_Hours (startingHour, endingHour) VALUES (TO_TIMESTAMP('1970-01-01 10:00:00', 'YYYY-MM-DD HH24:MI:SS'), TO_TIMESTAMP('1970-01-01 18:00:00', 'YYYY-MM-DD HH24:MI:SS'));
+INSERT INTO Financial_Market_Hours (startingHour, endingHour) VALUES (TO_TIMESTAMP('1970-01-01 06:00:00', 'YYYY-MM-DD HH24:MI:SS'), TO_TIMESTAMP('1970-01-01 14:00:00', 'YYYY-MM-DD HH24:MI:SS'));
 
 
-INSERT INTO Financial_Market2 (startingHour, country, marketDate) VALUES (TO_TIMESTAMP('1970-01-01 08:00:00', 'YYYY-MM-DD HH24:MI:SS'), 'USA', TO_DATE('2020-02-25', 'YYYY-MM-DD'));
-INSERT INTO Financial_Market2 (startingHour, country, marketDate) VALUES (TO_TIMESTAMP('1970-01-01 09:00:00', 'YYYY-MM-DD HH24:MI:SS'), 'China', TO_DATE('2012-03-27', 'YYYY-MM-DD'));
-INSERT INTO Financial_Market2 (startingHour, country, marketDate) VALUES (TO_TIMESTAMP('1970-01-01 07:00:00', 'YYYY-MM-DD HH24:MI:SS'), 'Germany', TO_DATE('2013-09-18', 'YYYY-MM-DD'));
-INSERT INTO Financial_Market2 (startingHour, country, marketDate) VALUES (TO_TIMESTAMP('1970-01-01 10:00:00', 'YYYY-MM-DD HH24:MI:SS'), 'Japan', TO_DATE('2016-01-07', 'YYYY-MM-DD'));
-INSERT INTO Financial_Market2 (startingHour, country, marketDate) VALUES (TO_TIMESTAMP('1970-01-01 06:00:00', 'YYYY-MM-DD HH24:MI:SS'), 'Canada', TO_DATE('2018-08-22', 'YYYY-MM-DD'));
+INSERT INTO Financial_Market_Info (startingHour, country, marketDate) VALUES (TO_TIMESTAMP('1970-01-01 08:00:00', 'YYYY-MM-DD HH24:MI:SS'), 'USA', TO_DATE('2020-02-25', 'YYYY-MM-DD'));
+INSERT INTO Financial_Market_Info (startingHour, country, marketDate) VALUES (TO_TIMESTAMP('1970-01-01 09:00:00', 'YYYY-MM-DD HH24:MI:SS'), 'China', TO_DATE('2012-03-27', 'YYYY-MM-DD'));
+INSERT INTO Financial_Market_Info (startingHour, country, marketDate) VALUES (TO_TIMESTAMP('1970-01-01 07:00:00', 'YYYY-MM-DD HH24:MI:SS'), 'Germany', TO_DATE('2013-09-18', 'YYYY-MM-DD'));
+INSERT INTO Financial_Market_Info (startingHour, country, marketDate) VALUES (TO_TIMESTAMP('1970-01-01 10:00:00', 'YYYY-MM-DD HH24:MI:SS'), 'Japan', TO_DATE('2016-01-07', 'YYYY-MM-DD'));
+INSERT INTO Financial_Market_Info (startingHour, country, marketDate) VALUES (TO_TIMESTAMP('1970-01-01 06:00:00', 'YYYY-MM-DD HH24:MI:SS'), 'Canada', TO_DATE('2018-08-22', 'YYYY-MM-DD'));
 
 
 INSERT into Stock_Market (country, numberOfStocks ) VALUES ('USA','396');
@@ -316,11 +316,11 @@ INSERT INTO User_Info (email, ID, name) VALUES ('BobWayne34@gmail.com', 'U2T6K9Y
 INSERT INTO User_Info (email, ID, name) VALUES ('KateL09@hotmail.com', 'U3V7M1X8', 'Kate Lee');
 INSERT INTO User_Info (email, ID, name) VALUES ('MikeDo98@msn.com', 'U6N2D5B9', 'Michael Do');
 
-INSERT INTO "In" (country, ID) VALUES ('USA', 'U5H9P2Z3');
-INSERT INTO "In" (country, ID) VALUES ('China', 'U8F4Q1W7');
-INSERT INTO "In" (country, ID) VALUES ('Germany', 'U2T6K9Y4');
-INSERT INTO "In" (country, ID) VALUES ('Japan', 'U3V7M1X8');
-INSERT INTO "In" (country, ID) VALUES ('Canada', 'U6N2D5B9');
+INSERT INTO User_In_Financial (country, ID) VALUES ('USA', 'U5H9P2Z3');
+INSERT INTO User_In_Financial (country, ID) VALUES ('China', 'U8F4Q1W7');
+INSERT INTO User_In_Financial (country, ID) VALUES ('Germany', 'U2T6K9Y4');
+INSERT INTO User_In_Financial (country, ID) VALUES ('Japan', 'U3V7M1X8');
+INSERT INTO User_In_Financial (country, ID) VALUES ('Canada', 'U6N2D5B9');
 
 INSERT INTO Has_Account (accountID, balance, accountName, since, ID) VALUES ('ACCa2B3cD4', '5020', 'JohnKent01', TO_DATE('2020-01-15', 'YYYY-MM-DD'), 'U5H9P2Z3');
 INSERT INTO Has_Account (accountID, balance, accountName, since, ID) VALUES ('ACC1eFg2H3', '10810', 'AliceG23', TO_DATE('2021-07-20', 'YYYY-MM-DD'), 'U8F4Q1W7');
