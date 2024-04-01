@@ -20,103 +20,38 @@ $success = true;	// keep track of errors so page redirects only if there are no 
 
 $show_debug_alert_messages = False; // show which methods are being triggered (see debugAlertMessage())
 
-connectToDB();
-
-
-function getTablesAndAttributes()
-{
-    global $db_conn;
-
-    $tables = array();
-
-    $query = "SELECT table_name FROM user_tables";
-    $stmt = oci_parse($db_conn, $query);
-    oci_execute($stmt);
-
-    while ($row = oci_fetch_assoc($stmt)) {
-        $tables[] = $row['TABLE_NAME'];
-    }
-
-    return $tables;
-}
-
-function getAttributesForTable($tableName)
-{
-    global $db_conn;
-
-    $attributes = array();
-
-    // Query to fetch attributes for the selected table
-    $query = "SELECT column_name FROM all_tab_columns WHERE table_name = '$tableName'";
-    $stmt = oci_parse($db_conn, $query);
-    oci_execute($stmt);
-
-    while ($row = oci_fetch_assoc($stmt)) {
-        $attributes[] = $row['COLUMN_NAME'];
-    }
-
-    return $attributes;
-}
-
-// connectToDB();
-
 // The next tag tells the web server to stop parsing the text as PHP. Use the
 // pair of tags wherever the content switches to PHP
 ?>
 
 <body>
-
-    <h2>Find accounts created after a certain date</h2>
+    <h2>Find the highest stock price of each account</h2>
 	<form method="POST" action="Aggregation.php">
-        <input type="hidden" id="SelectionRequest" name="selectionRequest">
-
-		<!-- <input type="checkbox" id="BeforeDate" name="beforeDate"> -->
-		<!-- <label for="BeforeDateInput">Accounts created before:</label>
-        <input type="date" id="BeforeDateInput" name="beforeDateInput" pattern="\d{4}-\d{2}-\d{2}"> </br> -->
-
-		<!-- <input type="checkbox" id="AfterDate" name="afterDate"> -->
-		<label for="AftereDateInput">Accounts created after:</label> <!-- todo: add some space here !-->
-        <input type="date" id="AfterDateInput" name="afterDateInput" pattern="\d{4}-\d{2}-\d{2}" required>
-
-
+        <input type="hidden" id="GroupbyRequest" name="groupByRequest">
 		<p><input type="submit" value="Find" name="find"></p>
-
 	</form>
     
     <hr />
 
-	<h2>Choose attributes from any table</h2>
+    <h2>Find the lowest stock price of each account having accountID starts with 'A'</h2>
 	<form method="POST" action="Aggregation.php">
-        <input type="hidden" id="ProjectionRequest" name="projectionRequest">
+        <input type="hidden" id="HavingRequest" name="havingRequest">
+		<p><input type="submit" value="Find" name="find"></p>
+	</form>
 
-		<label for="selectedTable">Select Table:</label>
-        <select name="selectedTable" onchange="this.form.submit()">
-            <?php
-            $tables = getTablesAndAttributes();
-            foreach ($tables as $table) {
-            $selected = isset($_POST['selectedTable']) && $_POST['selectedTable'] == $table ? 'selected' : '';
-            echo '<option value="' . $table . '" ' . $selected . '>' . $table . '</option>';
-        }
-            ?>
-        </select>
+    <hr />
 
-		<?php
-    if (isset($_POST['selectedTable'])) {
-        $selectedTable = $_POST['selectedTable'];
-        $attributes = getAttributesForTable($selectedTable);
-        if ($attributes) {
-            echo '<div id="attributeCheckboxes">';
-            foreach ($attributes as $attribute) {
-                echo '<input type="checkbox" name="selectedAttributes[]" value="' . $attribute . '">';
-                echo '<label for="' . $attribute . '">' . $attribute . '</label><br>';
-            }
-            echo '</div>';
-        } else {
-            echo '<p>No attributes found for the selected table.</p>';
-        }
-    }
-    ?>
+    <h2>Find the account who bought the highest average stock price</h2>
+	<form method="POST" action="Aggregation.php">
+        <input type="hidden" id="NestedAggregationRequest" name="nestedAggregationRequest">
+		<p><input type="submit" value="Find" name="find"></p>
+	</form>
 
+    <hr />
+
+    <h2>Find account has operated on every stock in its watchlist</h2>
+	<form method="POST" action="Aggregation.php">
+        <input type="hidden" id="DivisionRequest" name="divisionRequest">
 		<p><input type="submit" value="Find" name="find"></p>
 	</form>
 
@@ -187,66 +122,99 @@ function getAttributesForTable($tableName)
 		oci_close($db_conn);
 	}
 
-	function handleSelectionRequest($afterDate)
+	function handleGroupByRequest()
 	{
 		global $db_conn;
-		$result = executePlainSQL("
-   		SELECT A.accountID
-    	FROM Has_Account A
-		WHERE A.since > TO_DATE('$afterDate', 'YYYY-MM-DD')
+		$result = executePlainSQL
+		("
+		Select O.accountID, MAX(S.price) AS highest_price
+		From Operates_Stock O, Owns_PTC_Stock_Stock S
+		Where O.stockID = S.stockID
+		Group by O.accountID
 		");
-
 		if ($result) {
-			echo "<br>AccountID<br>";
+			echo "<br>AccountID | Highest Price<br>";
 			while ($row = oci_fetch_array($result, OCI_ASSOC)) {
-				echo $row['ACCOUNTID'] . "<br>";
+				echo $row['ACCOUNTID'] . " | " . $row['HIGHEST_PRICE'] . "<br>";
 			}
 		} else {
 			echo "No data found.";
 		}
-
 	}
 
-	function handleProjectionRequest($selectedTable, $selectedAttributes)
+	function handleHavingRequest()
 	{
 		global $db_conn;
-		$selectQuery = "SELECT " . implode(", ", $selectedAttributes) . " FROM $selectedTable";
-		// var_dump($selectedTable)
-		$result = executePlainSQL($selectQuery);
-		
+		$result = executePlainSQL
+		("
+		Select O.accountID, MIN(S.price) AS lowest_price
+		From Operates_Stock O, Owns_PTC_Stock_Stock S
+		Where O.stockID = S.stockID
+		Group by O.accountID
+		Having O.accountID LIKE 'A%'
+		");
 		if ($result) {
-			echo '<h2>Generated Table</h2>';
-			echo '<table>';
-			echo '<tr>';
-			// Display attribute names as table headers
-			foreach ($selectedAttributes as $attribute) {
-				echo '<th>' . $attribute . '</th>';
+			echo "<br>AccountID | Lowest Price<br>";
+			while ($row = oci_fetch_array($result, OCI_ASSOC)) {
+				echo $row['ACCOUNTID'] . " | " . $row['LOWEST_PRICE'] . "<br>";
 			}
-			echo '</tr>';
-		
-			// Check if there are rows to fetch
-			if (oci_fetch($result)) {
-				// Fetch and display attribute values for each row
-				do {
-					echo '<tr>';
-					foreach ($selectedAttributes as $attribute) {
-						echo '<td>' . oci_result($result, $attribute) . '</td>';
-					}
-					echo '</tr>';
-				} while (oci_fetch($result));
-			} else {
-				echo '<tr><td colspan="' . count($selectedAttributes) . '">No data found for the selected attributes and table.</td></tr>';
-			}
-		
-			echo '</table>';
 		} else {
-			echo '<p>No data found for the selected attributes and table.</p>';
-			$e = oci_error(); // Get OCI error information
-			if ($e) {
-				echo htmlentities($e['message']); // Display OCI error message
-			}
+			echo "No data found.";
 		}
+	}
 
+	function handleNestedAggregationRequest()
+	{
+		global $db_conn;
+		$result = executePlainSQL
+		("
+		With Temp(accountID, average) AS 
+		(Select O.accountID, AVG(S.price) as average
+		From Operates_Stock O, Owns_PTC_Stock_Stock S
+		Where O.stockID = S.stockID
+		Group by O.accountID)
+		Select T.accountID, T.average
+		From Temp T
+		Where T.average = (Select MIN(T2.average)
+		From Temp T2)
+		");
+		if ($result) {
+			echo "<br>AccountID | Lowest Average<br>";
+			while ($row = oci_fetch_array($result, OCI_ASSOC)) {
+				echo $row['ACCOUNTID'] . " | " . $row['AVERAGE'] . "<br>";
+			}
+		} else {
+			echo "No data found.";
+		}
+	}
+
+	function handleDivisionRequest()
+	{
+		global $db_conn;
+		$result = executePlainSQL
+		("
+		Select H.accountID
+		From Has_Account H
+		Where NOT EXISTS 
+		(Select I.stockID
+		From Includes_Stock I, Create_Watchlist C
+		Where I.listID = C.listID and C.accountID = H.accountID
+		AND NOT EXISTS (
+			Select O.accountID
+			From Operates_Stock O
+			Where O.accountID = H.accountID
+			And I.stockID = O.stockID
+		)
+		)
+		");
+		if ($result) {
+			echo "<br>AccountID<br>";
+			while ($row = oci_fetch_array($result, OCI_ASSOC)) {
+				echo $row['ACCOUNTID'] ."<br>";
+			}
+		} else {
+			echo "No data found.";
+		}
 	}
 
 	// HANDLE ALL POST ROUTES
@@ -254,17 +222,17 @@ function getAttributesForTable($tableName)
 	function handlePOSTRequest()
 	{
 		if (connectToDB()) {
-			if (array_key_exists('selectionRequest', $_POST)) {
-				// Handle form data and pass to handleSelectionRequest
-				// $beforeDate = $_POST['beforeDateInput'];
-				$afterDate = $_POST['afterDateInput'];
-				handleSelectionRequest($afterDate);
-				
-			} else if (array_key_exists('projectionRequest', $_POST)) {	
-				$selectedAttributes = isset($_POST['selectedAttributes']) ? $_POST['selectedAttributes'] : array();
-				$selectedTable = $_POST['selectedTable'];
-				handleProjectionRequest($selectedTable, $selectedAttributes);
-			} 
+			if (array_key_exists('resetTablesRequest', $_POST)) {
+				handleResetRequest();
+			} else if (array_key_exists('groupByRequest', $_POST)) {
+				handleGroupByRequest();
+			} else if (array_key_exists('havingRequest', $_POST)) {
+				handleHavingRequest();
+			} else if (array_key_exists('nestedAggregationRequest', $_POST)) {
+				handleNestedAggregationRequest();
+			} else if (array_key_exists('divisionRequest', $_POST)) {
+				handleDivisionRequest();
+			}
 
 			disconnectFromDB();
 		}
