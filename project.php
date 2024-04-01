@@ -20,11 +20,58 @@ $success = true;	// keep track of errors so page redirects only if there are no 
 
 $show_debug_alert_messages = False; // show which methods are being triggered (see debugAlertMessage())
 
+connectToDB();
+
 // The next tag tells the web server to stop parsing the text as PHP. Use the
 // pair of tags wherever the content switches to PHP
 ?>
 
 <body>
+
+	<h2>Choose attributes from any table</h2>
+	<form method="POST" action="project.php">
+        <input type="hidden" id="ProjectionRequest" name="projectionRequest">
+
+		<label for="selectedTable">Select Table:</label>
+        <select name="selectedTable" onchange="this.form.submit()">
+            <?php
+            $tables = getTables();
+            foreach ($tables as $table) 
+			{
+				$selected = $_POST['selectedTable'] == $table ? 'selected' : '';
+				echo '<option value="' . $table . '" ' . $selected . '>' . $table . '</option>';
+       		}
+            ?>
+        </select>
+
+		<?php
+		if (isset($_POST['selectedTable'])) {
+			$selectedTable = $_POST['selectedTable'];
+			$attributes = getAttributesForTable($selectedTable);
+			if ($attributes) {
+				echo '<div id="attributeCheckboxes">';
+				foreach ($attributes as $attribute) {
+					echo '<input type="checkbox" name="selectedAttributes[]" value="' . $attribute . '">';
+					echo '<label for="' . $attribute . '">' . $attribute . '</label><br>';
+				}
+				echo '</div>';
+			} else {
+				echo '<p>No attributes found for the selected table.</p>';
+			}
+		}
+    ?>
+
+		<p><input type="submit" value="Find" name="find"></p>
+	</form>
+
+	<h2>Find names of accounts that have operated on stocks with dividend greater than a certain amount</h2>
+	<form method="POST" action="project.php">
+        <input type="hidden" id="JoinRequest" name="joinRequest">
+		Dividend: <input type="number" for="Dividend" step="0.01" name="dividendInput" min="0" required><br>
+
+		<p><input type="submit" value="Find" name="find"></p>
+
+	</form>
 
     <h2>Find the highest stock price of each account</h2>
 	<form method="POST" action="project.php">
@@ -145,6 +192,88 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 		oci_close($db_conn);
 	}
 
+	function getTables()
+	{
+		global $db_conn;
+		$tables = array();
+
+		$query = "SELECT table_name FROM user_tables";
+		$statement = oci_parse($db_conn, $query);
+		oci_execute($statement, OCI_DEFAULT);
+
+		while ($row = oci_fetch_array($statement)) 
+		{
+			$tables[] = $row['TABLE_NAME'];
+    	}
+
+    	return $tables;
+	}
+
+	function getAttributesForTable($tableName)
+	{
+		global $db_conn;
+		$attributes = array();
+
+		$query = "SELECT column_name FROM user_tab_cols WHERE table_name = '$tableName'";
+		$statement = oci_parse($db_conn, $query);
+		oci_execute($statement, OCI_DEFAULT);
+
+		while ($row = oci_fetch_array($statement)) 
+		{
+			$attributes[] = $row['COLUMN_NAME'];
+		}
+
+		return $attributes;
+	}
+
+	function handleProjectionRequest($selectedTable, $selectedAttributes)
+	{
+		global $db_conn;
+		$selectQuery = "SELECT " . implode(", ", $selectedAttributes) . " FROM $selectedTable";
+		$result = executePlainSQL($selectQuery);
+		
+		if ($result) {
+			echo '<table>';
+			echo '<tr>';
+			foreach ($selectedAttributes as $attribute) {
+				echo '<th>' . $attribute . '</th>';
+			}
+			echo '</tr>';
+		
+			while (oci_fetch($result)) {
+				echo '<tr>';
+				foreach ($selectedAttributes as $attribute) {
+					echo '<td>' . oci_result($result, $attribute) . '</td>';
+				}
+				echo '</tr>';
+			}
+		
+			echo '</table>';
+		} else {
+			echo '<p>No data found for the selected attributes and table.</p>';
+		}
+
+	}
+
+	function handleJoinRequest($dividend)
+	{
+		global $db_conn;
+		$result = executePlainSQL("
+   		SELECT DISTINCT A.accountName
+    	FROM Has_Account A, Operates_Stock S, Owns_PTC_Stock_Stock O
+		WHERE O.dividend > $dividend AND S.accountID = A.accountID AND S.stockID = O.stockID
+		");
+
+		if ($result) {
+			echo "<br>accountName<br>";
+			while ($row = oci_fetch_array($result, OCI_ASSOC)) {
+				echo $row['ACCOUNTNAME'] . "<br>";
+			}
+		} else {
+			echo "No account names found.";
+		}
+	}
+
 	function handleGroupByRequest()
 	{
 		global $db_conn;
@@ -245,7 +374,18 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 	function handlePOSTRequest()
 	{
 		if (connectToDB()) {
-			if (array_key_exists('resetTablesRequest', $_POST)) {
+			if (array_key_exists('projectionRequest', $_POST)) {	
+				if (!isset($_POST['selectedAttributes']) || empty($_POST['selectedAttributes'])) {
+					echo '<p style="color: red;">Please select at least one attribute.</p>';
+				} else {
+					$selectedAttributes = $_POST['selectedAttributes'];
+					$selectedTable = $_POST['selectedTable'];
+					handleProjectionRequest($selectedTable, $selectedAttributes);
+				}
+			} else if (array_key_exists('joinRequest', $_POST)) {
+				$dividend = $_POST['dividendInput'];
+				handleJoinRequest($dividend);
+			} else if (array_key_exists('resetTablesRequest', $_POST)) {
 				handleResetRequest();
 			} else if (array_key_exists('groupByRequest', $_POST)) {
 				handleGroupByRequest();
