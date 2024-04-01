@@ -25,6 +25,7 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 ?>
 
 <body>
+
     <h2>Find the highest stock price of each account</h2>
 	<form method="POST" action="Aggregation.php">
         <input type="hidden" id="GroupbyRequest" name="groupByRequest">
@@ -41,7 +42,7 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 
     <hr />
 
-    <h2>Find the account who bought the highest average stock price</h2>
+    <h2>Find the account who bought the lowest average stock price</h2>
 	<form method="POST" action="Aggregation.php">
         <input type="hidden" id="NestedAggregationRequest" name="nestedAggregationRequest">
 		<p><input type="submit" value="Find" name="find"></p>
@@ -49,7 +50,7 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 
     <hr />
 
-    <h2>Find account has operated on every stock in its watchlist</h2>
+    <h2>Find account has operated on every stock in its watchlist (includes the accounts has no watchlist)</h2>
 	<form method="POST" action="Aggregation.php">
         <input type="hidden" id="DivisionRequest" name="divisionRequest">
 		<p><input type="submit" value="Find" name="find"></p>
@@ -57,6 +58,28 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 
 	<?php
 	// The following code will be parsed as PHP
+
+	function executeSQLScript($filePath) {
+		global $db_conn;
+		
+		$scriptContent = file_get_contents($filePath);
+		$sqlCommands = explode(';', $scriptContent); // assuming each SQL command ends with a semicolon
+		
+		foreach ($sqlCommands as $command) {
+			if (trim($command)) {
+				executePlainSQL($command);
+			}
+		}
+	}
+
+	function handleResetRequest()
+	{
+		global $db_conn;
+
+		// Create new table
+		echo "<br> creating new table <br>";
+		executeSQLScript('/home/a/axue02/new.sql');
+	}
 
 	function debugAlertMessage($message)
 	{
