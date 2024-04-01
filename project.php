@@ -27,7 +27,7 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 <body>
 
     <h2>Find the highest stock price of each account</h2>
-	<form method="POST" action="Aggregation.php">
+	<form method="POST" action="project.php">
         <input type="hidden" id="GroupbyRequest" name="groupByRequest">
 		<p><input type="submit" value="Find" name="find"></p>
 	</form>
@@ -35,7 +35,7 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
     <hr />
 
     <h2>Find the lowest stock price of each account having accountID starts with 'A'</h2>
-	<form method="POST" action="Aggregation.php">
+	<form method="POST" action="project.php">
         <input type="hidden" id="HavingRequest" name="havingRequest">
 		<p><input type="submit" value="Find" name="find"></p>
 	</form>
@@ -43,7 +43,7 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
     <hr />
 
     <h2>Find the account who bought the lowest average stock price</h2>
-	<form method="POST" action="Aggregation.php">
+	<form method="POST" action="project.php">
         <input type="hidden" id="NestedAggregationRequest" name="nestedAggregationRequest">
 		<p><input type="submit" value="Find" name="find"></p>
 	</form>
@@ -51,7 +51,7 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
     <hr />
 
     <h2>Find account has operated on every stock in its watchlist (includes the accounts has no watchlist)</h2>
-	<form method="POST" action="Aggregation.php">
+	<form method="POST" action="project.php">
         <input type="hidden" id="DivisionRequest" name="divisionRequest">
 		<p><input type="submit" value="Find" name="find"></p>
 	</form>
