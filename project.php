@@ -77,6 +77,11 @@ connectToDB();
 	<form method="POST" action="project.php">
         <input type="hidden" id="GroupbyRequest" name="groupByRequest">
 		<p><input type="submit" value="Find" name="find"></p>
+		<?php
+			if (isset($_POST['find'])) {
+				handleGroupByRequest();
+			}
+		?>
 	</form>
     
     <hr />
@@ -84,7 +89,12 @@ connectToDB();
     <h2>Find the lowest stock price of each account having accountID starts with 'A'</h2>
 	<form method="POST" action="project.php">
         <input type="hidden" id="HavingRequest" name="havingRequest">
-		<p><input type="submit" value="Find" name="find"></p>
+		<p><input type="submit" value="Find" name="find1"></p>
+		<?php
+			if (isset($_POST['find1'])) {
+			handleHavingRequest();
+			}
+		?>
 	</form>
 
     <hr />
@@ -92,7 +102,12 @@ connectToDB();
     <h2>Find the account who bought the lowest average stock price</h2>
 	<form method="POST" action="project.php">
         <input type="hidden" id="NestedAggregationRequest" name="nestedAggregationRequest">
-		<p><input type="submit" value="Find" name="find"></p>
+		<p><input type="submit" value="Find" name="find2"></p>
+		<?php
+			if (isset($_POST['find2'])) {
+				handleNestedAggregationRequest();
+			}
+		?>
 	</form>
 
     <hr />
@@ -100,7 +115,12 @@ connectToDB();
     <h2>Find account has operated on every stock in its watchlist (includes the accounts has no watchlist)</h2>
 	<form method="POST" action="project.php">
         <input type="hidden" id="DivisionRequest" name="divisionRequest">
-		<p><input type="submit" value="Find" name="find"></p>
+		<p><input type="submit" value="Find" name="find3"></p>
+		<?php
+			if (isset($_POST['find3'])) {
+				handleDivisionRequest();
+			}
+		?>
 	</form>
 
 	<?php
@@ -371,40 +391,42 @@ connectToDB();
 
 	// HANDLE ALL POST ROUTES
 	// A better coding practice is to have one method that reroutes your requests accordingly. It will make it easier to add/remove functionality.
-	function handlePOSTRequest()
-	{
-		if (connectToDB()) {
-			if (array_key_exists('projectionRequest', $_POST)) {	
-				if (!isset($_POST['selectedAttributes']) || empty($_POST['selectedAttributes'])) {
-					echo '<p style="color: red;">Please select at least one attribute.</p>';
-				} else {
-					$selectedAttributes = $_POST['selectedAttributes'];
-					$selectedTable = $_POST['selectedTable'];
-					handleProjectionRequest($selectedTable, $selectedAttributes);
-				}
-			} else if (array_key_exists('joinRequest', $_POST)) {
-				$dividend = $_POST['dividendInput'];
-				handleJoinRequest($dividend);
-			} else if (array_key_exists('resetTablesRequest', $_POST)) {
-				handleResetRequest();
-			} else if (array_key_exists('groupByRequest', $_POST)) {
-				handleGroupByRequest();
-			} else if (array_key_exists('havingRequest', $_POST)) {
-				handleHavingRequest();
-			} else if (array_key_exists('nestedAggregationRequest', $_POST)) {
-				handleNestedAggregationRequest();
-			} else if (array_key_exists('divisionRequest', $_POST)) {
-				handleDivisionRequest();
-			}
+	// function handlePOSTRequest()
+	// {
+	// 	if (connectToDB()) {
+	// 		if (array_key_exists('projectionRequest', $_POST)) {	
+	// 			if (!isset($_POST['selectedAttributes']) || empty($_POST['selectedAttributes'])) {
+	// 				echo '<p style="color: red;">Please select at least one attribute.</p>';
+	// 			} else {
+	// 				$selectedAttributes = $_POST['selectedAttributes'];
+	// 				$selectedTable = $_POST['selectedTable'];
+	// 				handleProjectionRequest($selectedTable, $selectedAttributes);
+	// 			}
+	// 		} else if (array_key_exists('joinRequest', $_POST)) {
+	// 			$dividend = $_POST['dividendInput'];
+	// 			handleJoinRequest($dividend);
+	// 		} else if (array_key_exists('resetTablesRequest', $_POST)) {
+	// 			handleResetRequest();
+	// 		} else if (array_key_exists('groupByRequest', $_POST)) {
+	// 			handleGroupByRequest();
+	// 		} else if (array_key_exists('havingRequest', $_POST)) {
+	// 			handleHavingRequest();
+	// 		} else if (array_key_exists('nestedAggregationRequest', $_POST)) {
+	// 			handleNestedAggregationRequest();
+	// 		} else if (array_key_exists('divisionRequest', $_POST)) {
+	// 			handleDivisionRequest();
+	// 		}
 
-			disconnectFromDB();
-		}
-	}
+	// 		disconnectFromDB();
+	// 	}
+	// }
 
-	if (isset($_POST['reset']) || isset($_POST['find'])) {
-		handlePOSTRequest();
-	}
+	
+	// if (isset($_POST['reset']) || isset($_POST['find'])) {
+	// 	handlePOSTRequest();
+	// }
 
+	
 	// End PHP parsing and send the rest of the HTML content
 	?>
 </body>
