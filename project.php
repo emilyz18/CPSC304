@@ -28,6 +28,25 @@ connectToDB();
 
 <body>
 
+<h2>Find accounts</h2>
+	<form method="POST" action="project.php">
+        <input type="hidden" id="SelectionRequest" name="selectionRequest">
+
+		Filter (example: accountID like 'A%'): <input type="text" name="filter" required>
+
+
+		<p><input type="submit" value="Find" name="findSelection"></p>
+		<?php
+			if (isset($_POST['findSelection'])) {
+				$filter = $_POST['filter'];
+				handleSelectionRequest($filter);
+			}
+		?>
+
+	</form>
+    
+    <hr />
+
 	<h2>Choose attributes from any table</h2>
 	<form method="POST" action="project.php">
         <input type="hidden" id="ProjectionRequest" name="projectionRequest">
@@ -61,15 +80,33 @@ connectToDB();
 		}
     ?>
 
-		<p><input type="submit" value="Find" name="find"></p>
+		<p><input type="submit" value="Find" name="findProjection"></p>
+		<?php
+			if (isset($_POST['findProjection'])) {
+				if (!isset($_POST['selectedAttributes']) || empty($_POST['selectedAttributes'])) {
+						echo '<p style="color: red;">Please select at least one attribute.</p>';
+					} else {
+						$selectedAttributes = $_POST['selectedAttributes'];
+						$selectedTable = $_POST['selectedTable'];
+						handleProjectionRequest($selectedTable, $selectedAttributes);
+					}
+			}
+		?>
 	</form>
+
+	<hr />
 
 	<h2>Find names of accounts that have operated on stocks with dividend greater than a certain amount</h2>
 	<form method="POST" action="project.php">
         <input type="hidden" id="JoinRequest" name="joinRequest">
 		Dividend: <input type="number" for="Dividend" step="0.01" name="dividendInput" min="0" required><br>
 
-		<p><input type="submit" value="Find" name="find"></p>
+		<p><input type="submit" value="Find" name="findJoin"></p>
+		<?php
+			if (isset($_POST['findJoin'])) {
+				handleGroupByRequest();
+			}
+		?>
 
 	</form>
 
@@ -79,7 +116,8 @@ connectToDB();
 		<p><input type="submit" value="Find" name="find"></p>
 		<?php
 			if (isset($_POST['find'])) {
-				handleGroupByRequest();
+				$dividend = $_POST['dividendInput'];
+				handleJoinRequest($dividend);
 			}
 		?>
 	</form>
@@ -246,6 +284,26 @@ connectToDB();
 		return $attributes;
 	}
 
+	function handleSelectionRequest($filter)
+	{
+		global $db_conn;
+		$result = executePlainSQL("
+   		SELECT A.accountID
+    	FROM Has_Account A
+		WHERE $filter
+		");
+
+		if ($result) {
+			echo "<br>AccountID<br>";
+			while ($row = oci_fetch_array($result, OCI_ASSOC)) {
+				echo $row['ACCOUNTID'] . "<br>";
+			}
+		} else {
+			echo "No data found.";
+		}
+
+	}
+
 	function handleProjectionRequest($selectedTable, $selectedAttributes)
 	{
 		global $db_conn;
@@ -388,39 +446,6 @@ connectToDB();
 			echo "No data found.";
 		}
 	}
-
-	// HANDLE ALL POST ROUTES
-	// A better coding practice is to have one method that reroutes your requests accordingly. It will make it easier to add/remove functionality.
-	// function handlePOSTRequest()
-	// {
-	// 	if (connectToDB()) {
-	// 		if (array_key_exists('projectionRequest', $_POST)) {	
-	// 			if (!isset($_POST['selectedAttributes']) || empty($_POST['selectedAttributes'])) {
-	// 				echo '<p style="color: red;">Please select at least one attribute.</p>';
-	// 			} else {
-	// 				$selectedAttributes = $_POST['selectedAttributes'];
-	// 				$selectedTable = $_POST['selectedTable'];
-	// 				handleProjectionRequest($selectedTable, $selectedAttributes);
-	// 			}
-	// 		} else if (array_key_exists('joinRequest', $_POST)) {
-	// 			$dividend = $_POST['dividendInput'];
-	// 			handleJoinRequest($dividend);
-	// 		} else if (array_key_exists('resetTablesRequest', $_POST)) {
-	// 			handleResetRequest();
-	// 		} else if (array_key_exists('groupByRequest', $_POST)) {
-	// 			handleGroupByRequest();
-	// 		} else if (array_key_exists('havingRequest', $_POST)) {
-	// 			handleHavingRequest();
-	// 		} else if (array_key_exists('nestedAggregationRequest', $_POST)) {
-	// 			handleNestedAggregationRequest();
-	// 		} else if (array_key_exists('divisionRequest', $_POST)) {
-	// 			handleDivisionRequest();
-	// 		}
-
-	// 		disconnectFromDB();
-	// 	}
-	// }
-
 	
 	// if (isset($_POST['reset']) || isset($_POST['find'])) {
 	// 	handlePOSTRequest();
