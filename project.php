@@ -28,6 +28,170 @@ connectToDB();
 
 <body>
 
+<h2>Reset</h2>
+	<p>If you wish to reset the table press on the reset button. If this is the first time you're running this page, you MUST use reset</p>
+
+	<form method="POST" action="project.php">
+		<input type="hidden" id="resetTablesRequest" name="resetTablesRequest">
+		<p><input type="submit" value="Reset" name="reset"></p>
+
+		<?php
+			if (isset($_POST['reset'])) {
+				if(connectToDB()) {
+					handleResetRequest();
+				}
+			}
+		?>
+	</form> 
+
+	<hr />
+
+	<h2>Create New User</h2>
+	<form method="POST" action="project.php">
+  		<input type="hidden" id="insertUserRequest" name="insertUserRequest">
+  
+		ID(Must be 8 Digits): <input type="text" name="insID"> <br /><br />
+		Email: <input type="text" name="insEmail"> <br /><br />
+		Name: <input type="text" name="insName"> <br /><br />
+		Address: <input type="text" name="insAddress"> <br /><br />
+		Phone Number: <input type="text" name="insPhoneNumber"> <br /><br />
+  
+		<input type="submit" value="Insert" name="insertSubmit">
+		<?php
+			if (isset($_POST['insertSubmit'])) {
+				if(connectToDB()) {
+					$Msg = handleInsertUserRequest();
+					echo "<div id='Messages'>$Msg</div>";
+					disconnectFromDB();
+				}
+			}
+		?>
+		
+	</form>
+
+
+	<form method="POST" action="project.php">
+		<input type="submit" name="displayUserTable_Insert" value="Display User Table">
+
+		<?php
+			if (isset($_POST['displayUserTable_Insert'])) {
+				displayUserInfo();
+				displayUserContactInfo();
+			}
+		?>
+	</form>
+
+	<hr />
+
+	<h2>Add User to Financial Market</h2>
+	<form method="POST" action="project.php">
+		<input type="hidden" id="insertUserInFinancialRequest" name="insertUserInFinancialRequest">
+	
+		User ID (Must be 8 Digits): <input type="text" name="userID"> <br /><br />
+		Country: <input type="text" name="country"> <br /><br />
+	
+		<input type="submit" value="Add to Market" name="insertUserInFinancial">
+
+		<div id="Messages">
+    		<?php echo htmlspecialchars($errorMsg); ?>
+		</div>
+
+		<?php
+			if (isset($_POST['insertUserInFinancial'])) {
+				if(connectToDB()) {
+					$Msg = handleInsertUserInFinancialRequest();
+					echo "<div id='Messages'>$Msg</div>";
+					disconnectFromDB();
+				}
+			}
+		?>
+	</form>
+
+	
+
+	<form method="POST" action="project.php">
+		<input type="submit" name="displayMarketData" value="Display Market Data">
+
+		<?php
+			if (isset($_POST['displayMarketData'])) {
+				displayUserInFinancial();
+				displayFinancialMarketInfo();
+			}
+		?>
+	</form>
+	
+	<hr />
+
+
+	<h2>Change User's Info</h2>
+	<p>Enter the user's ID and the new name you wish to change.</p>
+
+	<form method="POST" action="project.php">
+		<input type="hidden" id="updateQueryRequest" name="updateQueryRequest">
+
+		ID (to Update): <input type="text" name="userID"> <br /><br />
+		New Name: <input type="text" name="newName"> <br /><br />
+		New Email: <input type="text" name="newEmail"> <br /><br />
+		<input type="submit" value="Update" name="updateSubmit">
+
+		<?php
+			if (isset($_POST['updateSubmit'])) {
+				if(connectToDB()) {
+					$Msg = handleUpdateRequest();
+					echo "<div id='Messages'>$Msg</div>";
+					disconnectFromDB();
+				}
+			}
+		?>
+	</form>
+
+	<form method="POST" action="project.php">
+		<input type="submit" name="displayUserTable_Update" value="Display User Table">
+		
+		<?php
+			if (isset($_POST['displayUserTable_Update'])) {
+				displayUserInfo();
+				displayUserContactInfo();
+			}
+		?>
+	</form>
+
+
+	<hr />
+
+	<h2>Delete User</h2>
+	<p>Enter the ID of the user you wish to delete.</p>
+
+	<form method="POST" action="project.php">
+		<input type="hidden" id="deleteUserRequest" name="deleteUserRequest">
+		ID (to Delete): <input type="text" name="userIDToDelete"> <br /><br />
+		<input type="submit" value="Delete" name="deleteSubmit"></p>
+
+		<?php
+			if (isset($_POST['deleteSubmit'])) {
+				if(connectToDB()) {
+					$Msg = handleDeleteRequest();
+					echo "<div id='Messages'>$Msg</div>";
+					disconnectFromDB();
+				}
+			}
+		?>
+	</form>
+
+	<form method="POST" action="project.php">
+		<input type="submit" name="displayUserTable_Delete" value="Display User Table">
+
+		<?php
+			if (isset($_POST['displayUserTable_Delete'])) {
+				displayUserInfo();
+				displayUserContactInfo();
+			}
+		?>
+	</form>
+
+
+	<hr />
+
 <h2>Find accounts</h2>
 	<form method="POST" action="project.php">
         <input type="hidden" id="SelectionRequest" name="selectionRequest">
@@ -104,7 +268,8 @@ connectToDB();
 		<p><input type="submit" value="Find" name="findJoin"></p>
 		<?php
 			if (isset($_POST['findJoin'])) {
-				handleGroupByRequest();
+				$dividend = $_POST['dividendInput'];
+				handleJoinRequest($dividend);
 			}
 		?>
 
@@ -116,8 +281,8 @@ connectToDB();
 		<p><input type="submit" value="Find" name="find"></p>
 		<?php
 			if (isset($_POST['find'])) {
-				$dividend = $_POST['dividendInput'];
-				handleJoinRequest($dividend);
+				handleGroupByRequest();
+
 			}
 		?>
 	</form>
@@ -177,14 +342,6 @@ connectToDB();
 		}
 	}
 
-	function handleResetRequest()
-	{
-		global $db_conn;
-
-		// Create new table
-		echo "<br> creating new table <br>";
-		executeSQLScript('/home/a/axue02/new.sql');
-	}
 
 	function debugAlertMessage($message)
 	{
@@ -282,6 +439,355 @@ connectToDB();
 		}
 
 		return $attributes;
+	}
+
+	function handleResetRequest()
+	{
+		global $db_conn;
+
+		executePlainSQL("DROP TABLE FINANCIAL_MARKET_HOURS CASCADE CONSTRAINTS");
+		executePlainSQL("DROP TABLE FINANCIAL_MARKET_INFO CASCADE CONSTRAINTS");
+		executePlainSQL("DROP TABLE STOCK_MARKET CASCADE CONSTRAINTS");
+		executePlainSQL("DROP TABLE BOND_MARKET CASCADE CONSTRAINTS");
+		executePlainSQL("DROP TABLE USER_ADDRESS_INFO CASCADE CONSTRAINTS");
+		executePlainSQL("DROP TABLE USER_CONTACT_INFO CASCADE CONSTRAINTS");
+		executePlainSQL("DROP TABLE USER_INFO CASCADE CONSTRAINTS");
+		executePlainSQL("DROP TABLE User_In_Financial CASCADE CONSTRAINTS");
+		executePlainSQL("DROP TABLE HAS_ACCOUNT CASCADE CONSTRAINTS");
+		executePlainSQL("DROP TABLE PUBLIC_TRADED_COMPANY CASCADE CONSTRAINTS");
+		executePlainSQL("DROP TABLE PUBLIC_TRADED_COMPANY_DETAILS CASCADE CONSTRAINTS");
+		executePlainSQL("DROP TABLE OWNS_PTC_STOCK_STOCK CASCADE CONSTRAINTS");
+		executePlainSQL("DROP TABLE HAVE_STOCK CASCADE CONSTRAINTS");
+		executePlainSQL("DROP TABLE BOND CASCADE CONSTRAINTS");
+		executePlainSQL("DROP TABLE HAVE_BOND CASCADE CONSTRAINTS");
+		executePlainSQL("DROP TABLE CREATE_WATCHLIST CASCADE CONSTRAINTS");
+		executePlainSQL("DROP TABLE ISSUE_PTC_BOND_CORPORATEBOND CASCADE CONSTRAINTS");
+		executePlainSQL("DROP TABLE GOVERNMENT CASCADE CONSTRAINTS");
+		executePlainSQL("DROP TABLE ISSUE_GOVERNMENT_BOND_GOVERNMENTBOND CASCADE CONSTRAINTS");
+		executePlainSQL("DROP TABLE OPERATES_STOCK CASCADE CONSTRAINTS");
+		executePlainSQL("DROP TABLE OPERATES_BOND CASCADE CONSTRAINTS");
+		executePlainSQL("DROP TABLE INCLUDES_STOCK CASCADE CONSTRAINTS");
+		executePlainSQL("DROP TABLE INCLUDES_BOND CASCADE CONSTRAINTS");
+		
+		executeSQLScript('./SQL/MainSQL.sql');
+		
+		echo "<br> Reset Done! <br>";
+
+		oci_commit($db_conn);
+	}
+
+	function handleInsertUserRequest() {
+		global $db_conn;
+		$errorMessage = "";
+	
+		// Input sanitation and validation
+		$insID = htmlspecialchars($_POST['insID']);
+		$insEmail = filter_var($_POST['insEmail'], FILTER_VALIDATE_EMAIL);
+		$insName = preg_replace("/[^a-zA-Z\s]/", "", $_POST['insName']);
+		$insAddress = htmlspecialchars($_POST['insAddress']);
+		$insPhoneNumber = htmlspecialchars($_POST['insPhoneNumber']);
+	
+		// Input validation checks
+		if (strlen($insID) != 8) {
+			$errorMessage .= "ID Must be 8 Digits<br>";
+		}
+		if (!$insEmail) {
+			$errorMessage .= "Invalid Email<br>";
+		}
+		if (empty($insName)) {
+			$errorMessage .= "Invalid Name<br>";
+		}
+		if (empty($insAddress)) {
+			$errorMessage .= "Invalid Address<br>";
+		}
+		if (empty($insPhoneNumber) || !preg_match('/^[0-9]{10,15}$/', $insPhoneNumber)) {
+			$errorMessage .= "Invalid Phone Number<br>";
+		}
+	
+		// Stop if there are any validation errors
+		if (!empty($errorMessage)) {
+			return $errorMessage;
+		}
+	
+		// Check for duplicate ID, email, or address
+		// Duplicate ID check
+		$idCheckResult = executePlainSQL("SELECT ID FROM User_Info WHERE ID='" . $insID . "'");
+		if (oci_fetch_array($idCheckResult)) {
+			$errorMessage .= "Error: User with ID " . $insID . " already exists.<br>";
+		}
+	
+		// Duplicate email check
+		$emailCheckResult = executePlainSQL("SELECT email FROM User_Contact_Info WHERE email='" . $insEmail . "'");
+		if (oci_fetch_array($emailCheckResult)) {
+			$errorMessage .= "Error: User with email " . $insEmail . " already exists.<br>";
+		}
+	
+		// Duplicate address check
+		$addressCheckResult = executePlainSQL("SELECT address FROM User_Address_Info WHERE address='" . $insAddress . "'");
+		if (oci_fetch_array($addressCheckResult)) {
+			$errorMessage .= "Error: User with address " . $insAddress . " already exists.<br>";
+		}
+	
+		// Stop if there are any duplicate errors
+		if (!empty($errorMessage)) {
+			return $errorMessage;
+		}
+	
+		// If all checks pass, perform the database insert
+		executePlainSQL("INSERT INTO User_Address_Info (address, phoneNumber) VALUES ('" . $insAddress . "', '" . $insPhoneNumber . "')");
+		executePlainSQL("INSERT INTO User_Contact_Info (email, address) VALUES ('" . $insEmail . "', '" . $insAddress . "')");
+		executePlainSQL("INSERT INTO User_Info (email, ID, name) VALUES ('" . $insEmail . "', '" . $insID . "', '" . $insName . "')");
+	
+		oci_commit($db_conn);
+		// Return success message if no error occurred
+		return "User added successfully!";
+	}
+
+	function handleInsertUserInFinancialRequest() {
+		global $db_conn;
+		$errorMessage = "";
+		
+		// Input sanitation and validation
+		$userID = htmlspecialchars($_POST['userID']);
+		$country = htmlspecialchars($_POST['country']);
+	
+		// Input validation checks
+		if (strlen($userID) != 8) {
+			$errorMessage .= "ID Must be 8 Digits<br>";
+		}
+		if (empty($country)) {
+			$errorMessage .= "Country is required<br>";
+		}
+		
+		// Stop if there are any validation errors
+		if (!empty($errorMessage)) {
+			return $errorMessage;
+		}
+	
+		// Check for existence of user ID
+		$userCheckResult = executePlainSQL("SELECT ID FROM User_Info WHERE ID='" . $userID . "'");
+		if (!oci_fetch_array($userCheckResult)) {
+			$errorMessage .= "Error: User with ID " . $userID . " does not exist.<br>";
+		}
+	
+		// Check for existence of country in Financial_Market_Info
+		$countryCheckResult = executePlainSQL("SELECT country FROM Financial_Market_Info WHERE country='" . $country . "'");
+		if (!oci_fetch_array($countryCheckResult)) {
+			$errorMessage .= "Error: Country " . $country . " does not exist in Financial Market Info.<br>";
+		}
+		
+		// Check if the user-country pair already exists in User_In_Financial
+		$existsCheckResult = executePlainSQL("SELECT * FROM User_In_Financial WHERE ID='" . $userID . "' AND country='" . $country . "'");
+		if (oci_fetch_array($existsCheckResult)) {
+			$errorMessage .= "Error: The user with ID " . $userID . " is already associated with the financial market in " . $country . ".<br>";
+		}
+	
+		// Stop if there are any existence or duplication errors
+		if (!empty($errorMessage)) {
+			return $errorMessage;
+		}
+		
+		// If all checks pass, perform the database insert
+		$sql = "INSERT INTO User_In_Financial (country, ID) VALUES (:country, :userID)";
+		$stmt = oci_parse($db_conn, $sql);
+	
+		// Bind the parameters
+		oci_bind_by_name($stmt, ':country', $country);
+		oci_bind_by_name($stmt, ':userID', $userID);
+	
+		// Execute the statement and check for errors
+		if (!oci_execute($stmt)) {
+			$e = oci_error($stmt);
+			$errorMessage .= "Error inserting into User_In_Financial: " . htmlentities($e['message']) . "<br>";
+		}
+	
+		if (!empty($errorMessage)) {
+			return $errorMessage;
+		}
+	
+		// Commit the transaction to finalize the insertion
+		oci_commit($db_conn);
+		// Return success message if no error occurred
+		return "User successfully added to the financial market!";
+	}
+
+	function handleUpdateRequest() {
+		global $db_conn;
+		$errorMessage = "";
+		
+		// Input sanitation and validation
+		$userID = htmlspecialchars($_POST['userID']);
+		$newName = htmlspecialchars($_POST['newName']);
+		$newEmail = filter_var($_POST['newEmail'], FILTER_VALIDATE_EMAIL);
+		
+		// Input validation checks
+		if (strlen($userID) != 8) {
+			$errorMessage .= "ID must be 8 digits.<br>";
+		}
+		if (empty($newName)) {
+			$errorMessage .= "Invalid name.<br>";
+		}
+		if (!$newEmail) {
+			$errorMessage .= "Invalid email.<br>";
+		}
+		
+		// Check if ID exists
+		$idCheckResult = executePlainSQL("SELECT ID FROM User_Info WHERE ID='" . $userID . "'");
+		if (!oci_fetch_array($idCheckResult)) {
+			$errorMessage .= "User ID does not exist.<br>";
+		}
+		
+		// Check if the new email already exists
+		$emailCheckResult = executePlainSQL("SELECT email FROM User_Contact_Info WHERE email='" . $newEmail . "'");
+		if (oci_fetch_array($emailCheckResult)) {
+			$errorMessage .= "Email already in use.<br>";
+		}
+	
+		// Stop if there are any validation errors
+		if (!empty($errorMessage)) {
+			return $errorMessage;
+		}
+		
+		// Database update operations
+		$oldEmailQuery = executePlainSQL("SELECT email FROM User_Info WHERE ID='$userID'");
+		$oldEmailRow = OCI_Fetch_Array($oldEmailQuery, OCI_BOTH);
+		$oldEmail = $oldEmailRow[0];
+	
+		$oldAddressQuery = executePlainSQL("SELECT address FROM User_Contact_Info WHERE email='$oldEmail'");
+		$oldAddressRow = OCI_Fetch_Array($oldAddressQuery, OCI_BOTH);
+		$oldAddress = $oldAddressRow[0];
+	
+		// Insert the new email into User_Contact_Info with the existing address
+		executePlainSQL("INSERT INTO User_Contact_Info (email, address) VALUES ('" . $newEmail . "', '" . $oldAddress . "')");
+	
+		// Update the User_Info with the new email and name
+		executePlainSQL("UPDATE User_Info SET email='" . $newEmail . "', name='" . $newName . "' WHERE ID='" . $userID . "'");
+		
+		// Delete the old email from User_Contact_Info
+		executePlainSQL("DELETE FROM User_Contact_Info WHERE email='" . $oldEmail . "'");
+		
+		oci_commit($db_conn);
+		// Return success message if no error occurred
+		return "User updated successfully!";
+	}
+	
+
+	function handleDeleteRequest() {
+		global $db_conn;
+		$errorMessage = "";
+	
+		// Get the user ID from the form submission
+		$userIDToDelete = htmlspecialchars($_POST['userIDToDelete']);
+	
+		// Validate input
+		if (empty($userIDToDelete) || strlen($userIDToDelete) != 8) {
+			$errorMessage = "Invalid User ID format. Must be 8 digits.<br>";
+		}
+	
+		if (empty($errorMessage)) {
+			$oldEmailQuery = executePlainSQL("SELECT email FROM User_Info WHERE ID='$userIDToDelete'");
+			if ($oldEmailRow = OCI_Fetch_Array($oldEmailQuery, OCI_BOTH)) {
+				$oldEmail = $oldEmailRow[0];
+	
+				$oldAddressQuery = executePlainSQL("SELECT address FROM User_Contact_Info WHERE email='$oldEmail'");
+				if ($oldAddressRow = OCI_Fetch_Array($oldAddressQuery, OCI_BOTH)) {
+					$oldAddress = $oldAddressRow[0];
+	
+					// No need to manually delete from User_Contact_Info or User_Address_Info due to ON DELETE CASCADE
+					// Just delete the user from User_Info
+					executePlainSQL("DELETE FROM User_Address_Info WHERE Address='$oldAddress'");
+					oci_commit($db_conn);
+	
+					// Return success message if no error occurred
+					return "User Deleted Successfully!";
+				} else {
+					$errorMessage = "User ID found, but corresponding email or address not found.<br>";
+				}
+			} else {
+				$errorMessage = "User ID not found.<br>";
+			}
+		}
+	
+		// Return error message if something went wrong
+		return $errorMessage;
+	}
+	
+
+	function displayUserInFinancial() {
+		if (connectToDB()) {
+			global $db_conn;
+	
+			$result = executePlainSQL("SELECT * FROM User_In_Financial");
+			echo "<br>User In Financial Data:<br>";
+			echo "<table border='1'>";
+			echo "<tr><th>User ID</th><th>Country</th></tr>";
+		
+			while ($row = OCI_Fetch_Array($result, OCI_ASSOC)) {
+				echo "<tr><td>" . $row["ID"] . "</td><td>" . $row["COUNTRY"] . "</td></tr>";
+			}
+		
+			echo "</table>";
+
+			disconnectFromDB();
+		}
+	}
+	
+	function displayFinancialMarketInfo() {
+		if (connectToDB()) {
+			global $db_conn;
+		
+			$result = executePlainSQL("SELECT * FROM Financial_Market_Info");
+			echo "<br>Financial Market Info Data:<br>";
+			echo "<table border='1'>";
+			echo "<tr><th>Country</th><th>Market Date</th><th>Starting Hour</th></tr>";
+		
+			while ($row = OCI_Fetch_Array($result, OCI_ASSOC)) {
+				echo "<tr><td>" . $row["COUNTRY"] . "</td><td>" . $row["MARKETDATE"] . "</td><td>" . $row["STARTINGHOUR"] . "</td></tr>";
+			}
+		
+			echo "</table>";
+			
+			disconnectFromDB();
+		}
+
+	}
+
+	function displayUserInfo() {
+		if (connectToDB()) {
+			global $db_conn;
+	
+			$result = executePlainSQL("SELECT * FROM User_Info");
+			echo "<br>User Info Data:<br>";
+			echo "<table border='1'>";
+			echo "<tr><th>User ID</th><th>Name</th><th>Email</th></tr>";
+	
+			while ($row = OCI_Fetch_Array($result, OCI_ASSOC)) {
+				echo "<tr><td>" . $row["ID"] . "</td><td>" . $row["NAME"] . "</td><td>" . $row["EMAIL"] . "</td></tr>";
+			}
+	
+			echo "</table>";
+	
+			disconnectFromDB();
+		}
+	}
+
+	function displayUserContactInfo() {
+		if (connectToDB()) {
+			global $db_conn;
+	
+			$result = executePlainSQL("SELECT * FROM User_Contact_Info");
+			echo "<br>User Contact Info Data:<br>";
+			echo "<table border='1'>";
+			echo "<tr><th>Email</th><th>Address</th></tr>";
+	
+			while ($row = OCI_Fetch_Array($result, OCI_ASSOC)) {
+				echo "<tr><td>" . $row["EMAIL"] . "</td><td>" . $row["ADDRESS"] . "</td></tr>";
+			}
+	
+			echo "</table>";
+	
+			disconnectFromDB();
+		}
 	}
 
 	function handleSelectionRequest($filter)
