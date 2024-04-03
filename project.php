@@ -11,8 +11,8 @@ error_reporting(E_ALL);
 // Set some parameters
 
 // Database access configuration
-$config["dbuser"] = "ora_axue02";			// change "cwl" to your own CWL
-$config["dbpassword"] = "a70299383";	// change to 'a' + your student number
+$config["dbuser"] = "ora_fangzh02";			// change "cwl" to your own CWL
+$config["dbpassword"] = "a72990732";	// change to 'a' + your student number
 $config["dbserver"] = "dbhost.students.cs.ubc.ca:1522/stu";
 $db_conn = NULL;	// login credentials are used in connectToDB()
 
@@ -26,9 +26,17 @@ connectToDB();
 // pair of tags wherever the content switches to PHP
 ?>
 
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CPSC 304 GroupProject</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
 <body>
 
-<h2>Reset</h2>
+<body>
+
+	<h2>Reset</h2>
 	<p>If you wish to reset the table press on the reset button. If this is the first time you're running this page, you MUST use reset</p>
 
 	<form method="POST" action="project.php">
@@ -46,153 +54,160 @@ connectToDB();
 
 	<hr />
 
-	<h2>Create New User</h2>
-	<form method="POST" action="project.php">
-  		<input type="hidden" id="insertUserRequest" name="insertUserRequest">
-  
-		ID(Must be 8 Digits): <input type="text" name="insID"> <br /><br />
-		Email: <input type="text" name="insEmail"> <br /><br />
-		Name: <input type="text" name="insName"> <br /><br />
-		Address: <input type="text" name="insAddress"> <br /><br />
-		Phone Number: <input type="text" name="insPhoneNumber"> <br /><br />
-  
-		<input type="submit" value="Insert" name="insertSubmit">
-		<?php
-			if (isset($_POST['insertSubmit'])) {
-				if(connectToDB()) {
-					$Msg = handleInsertUserRequest();
-					echo "<div id='Messages'>$Msg</div>";
-					disconnectFromDB();
+	<nav>
+		<button class="tablink" onclick="openPage('InsertUpdateDelete', this)">Insert/Update/Delete</button>
+		<button class="tablink" onclick="openPage('QueriesDisplays', this)">Queries/Displays</button>
+	</nav>
+
+	<hr />
+
+	<div id="InsertUpdateDelete" class="tabcontent">
+
+		<h2>Create New User</h2>
+		<form method="POST" action="project.php">
+			<input type="hidden" id="insertUserRequest" name="insertUserRequest">
+	
+			ID(Must be 8 Digits): <input type="text" name="insID"> <br /><br />
+			Email: <input type="text" name="insEmail"> <br /><br />
+			Name: <input type="text" name="insName"> <br /><br />
+			Address: <input type="text" name="insAddress"> <br /><br />
+			Phone Number: <input type="text" name="insPhoneNumber"> <br /><br />
+	
+			<input type="submit" value="Insert" name="insertSubmit">
+			<?php
+				if (isset($_POST['insertSubmit'])) {
+					if(connectToDB()) {
+						$Msg = handleInsertUserRequest();
+						echo "<div id='Messages'>$Msg</div>";
+						disconnectFromDB();
+					}
 				}
-			}
-		?>
+			?>
+			
+		</form>
+
+
+		<form method="POST" action="project.php">
+			<input type="submit" name="displayUserTable_Insert" value="Display User Table">
+
+			<?php
+				if (isset($_POST['displayUserTable_Insert'])) {
+					displayUserInfo();
+					displayUserContactInfo();
+				}
+			?>
+		</form>
+
+		<hr />
+
+		<h2>Add User to Financial Market</h2>
+		<form method="POST" action="project.php">
+			<input type="hidden" id="insertUserInFinancialRequest" name="insertUserInFinancialRequest">
 		
-	</form>
-
-
-	<form method="POST" action="project.php">
-		<input type="submit" name="displayUserTable_Insert" value="Display User Table">
-
-		<?php
-			if (isset($_POST['displayUserTable_Insert'])) {
-				displayUserInfo();
-				displayUserContactInfo();
-			}
-		?>
-	</form>
-
-	<hr />
-
-	<h2>Add User to Financial Market</h2>
-	<form method="POST" action="project.php">
-		<input type="hidden" id="insertUserInFinancialRequest" name="insertUserInFinancialRequest">
-	
-		User ID (Must be 8 Digits): <input type="text" name="userID"> <br /><br />
-		Country: <input type="text" name="country"> <br /><br />
-	
-		<input type="submit" value="Add to Market" name="insertUserInFinancial">
-
-		<div id="Messages">
-    		<?php echo htmlspecialchars($errorMsg); ?>
-		</div>
-
-		<?php
-			if (isset($_POST['insertUserInFinancial'])) {
-				if(connectToDB()) {
-					$Msg = handleInsertUserInFinancialRequest();
-					echo "<div id='Messages'>$Msg</div>";
-					disconnectFromDB();
-				}
-			}
-		?>
-	</form>
-
-	
-
-	<form method="POST" action="project.php">
-		<input type="submit" name="displayMarketData" value="Display Market Data">
-
-		<?php
-			if (isset($_POST['displayMarketData'])) {
-				displayUserInFinancial();
-				displayFinancialMarketInfo();
-			}
-		?>
-	</form>
-	
-	<hr />
-
-
-	<h2>Change User's Info</h2>
-	<p>Enter the user's ID and the new name you wish to change.</p>
-
-	<form method="POST" action="project.php">
-		<input type="hidden" id="updateQueryRequest" name="updateQueryRequest">
-
-		ID (to Update): <input type="text" name="userID"> <br /><br />
-		New Name: <input type="text" name="newName"> <br /><br />
-		New Email: <input type="text" name="newEmail"> <br /><br />
-		<input type="submit" value="Update" name="updateSubmit">
-
-		<?php
-			if (isset($_POST['updateSubmit'])) {
-				if(connectToDB()) {
-					$Msg = handleUpdateRequest();
-					echo "<div id='Messages'>$Msg</div>";
-					disconnectFromDB();
-				}
-			}
-		?>
-	</form>
-
-	<form method="POST" action="project.php">
-		<input type="submit" name="displayUserTable_Update" value="Display User Table">
+			User ID (Must be 8 Digits): <input type="text" name="userID"> <br /><br />
+			Country: <input type="text" name="country"> <br /><br />
 		
-		<?php
-			if (isset($_POST['displayUserTable_Update'])) {
-				displayUserInfo();
-				displayUserContactInfo();
-			}
-		?>
-	</form>
+			<input type="submit" value="Add to Market" name="insertUserInFinancial">
 
-
-	<hr />
-
-	<h2>Delete User</h2>
-	<p>Enter the ID of the user you wish to delete.</p>
-
-	<form method="POST" action="project.php">
-		<input type="hidden" id="deleteUserRequest" name="deleteUserRequest">
-		ID (to Delete): <input type="text" name="userIDToDelete"> <br /><br />
-		<input type="submit" value="Delete" name="deleteSubmit"></p>
-
-		<?php
-			if (isset($_POST['deleteSubmit'])) {
-				if(connectToDB()) {
-					$Msg = handleDeleteRequest();
-					echo "<div id='Messages'>$Msg</div>";
-					disconnectFromDB();
+			<?php
+				if (isset($_POST['insertUserInFinancial'])) {
+					if(connectToDB()) {
+						$Msg = handleInsertUserInFinancialRequest();
+						echo "<div id='Messages'>$Msg</div>";
+						disconnectFromDB();
+					}
 				}
-			}
-		?>
-	</form>
+			?>
+		</form>
 
-	<form method="POST" action="project.php">
-		<input type="submit" name="displayUserTable_Delete" value="Display User Table">
+		
 
-		<?php
-			if (isset($_POST['displayUserTable_Delete'])) {
-				displayUserInfo();
-				displayUserContactInfo();
-			}
-		?>
-	</form>
+		<form method="POST" action="project.php">
+			<input type="submit" name="displayMarketData" value="Display Market Data">
+
+			<?php
+				if (isset($_POST['displayMarketData'])) {
+					displayUserInFinancial();
+					displayFinancialMarketInfo();
+				}
+			?>
+		</form>
+		
+		<hr />
 
 
+		<h2>Change User's Info</h2>
+		<p>Enter the user's ID and the new name you wish to change.</p>
+
+		<form method="POST" action="project.php">
+			<input type="hidden" id="updateQueryRequest" name="updateQueryRequest">
+
+			ID (to Update): <input type="text" name="userID"> <br /><br />
+			New Name: <input type="text" name="newName"> <br /><br />
+			New Email: <input type="text" name="newEmail"> <br /><br />
+			<input type="submit" value="Update" name="updateSubmit">
+
+			<?php
+				if (isset($_POST['updateSubmit'])) {
+					if(connectToDB()) {
+						$Msg = handleUpdateRequest();
+						echo "<div id='Messages'>$Msg</div>";
+						disconnectFromDB();
+					}
+				}
+			?>
+		</form>
+
+		<form method="POST" action="project.php">
+			<input type="submit" name="displayUserTable_Update" value="Display User Table">
+			
+			<?php
+				if (isset($_POST['displayUserTable_Update'])) {
+					displayUserInfo();
+					displayUserContactInfo();
+				}
+			?>
+		</form>
+
+
+		<hr />
+
+		<h2>Delete User</h2>
+		<p>Enter the ID of the user you wish to delete.</p>
+
+		<form method="POST" action="project.php">
+			<input type="hidden" id="deleteUserRequest" name="deleteUserRequest">
+			ID (to Delete): <input type="text" name="userIDToDelete"> <br /><br />
+			<input type="submit" value="Delete" name="deleteSubmit"></p>
+
+			<?php
+				if (isset($_POST['deleteSubmit'])) {
+					if(connectToDB()) {
+						$Msg = handleDeleteRequest();
+						echo "<div id='Messages'>$Msg</div>";
+						disconnectFromDB();
+					}
+				}
+			?>
+		</form>
+
+		<form method="POST" action="project.php">
+			<input type="submit" name="displayUserTable_Delete" value="Display User Table">
+
+			<?php
+				if (isset($_POST['displayUserTable_Delete'])) {
+					displayUserInfo();
+					displayUserContactInfo();
+				}
+			?>
+		</form>
+
+	</div>
+
+	<div id="QueriesDisplays" class="tabcontent">
 	<hr />
 
-<h2>Find accounts</h2>
+	<h2>Find accounts</h2>
 	<form method="POST" action="project.php">
         <input type="hidden" id="SelectionRequest" name="selectionRequest">
 
@@ -325,6 +340,8 @@ connectToDB();
 			}
 		?>
 	</form>
+
+	</div>
 
 	<?php
 	// The following code will be parsed as PHP
@@ -469,7 +486,7 @@ connectToDB();
 		executePlainSQL("DROP TABLE INCLUDES_STOCK CASCADE CONSTRAINTS");
 		executePlainSQL("DROP TABLE INCLUDES_BOND CASCADE CONSTRAINTS");
 		
-		executeSQLScript('./SQL/MainSQL.sql');
+		executeSQLScript('/home/f/fangzh02/public_html/MainSQL_Lite.sql');
 		
 		echo "<br> Reset Done! <br>";
 
@@ -960,6 +977,8 @@ connectToDB();
 	
 	// End PHP parsing and send the rest of the HTML content
 	?>
+
+	<script src="script.js"></script>
 </body>
 
 </html>
