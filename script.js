@@ -10,10 +10,17 @@ function openPage(pageName, element) {
     }
     document.getElementById(pageName).style.display = "block";
     element.className += " active";
+
+    localStorage.setItem('activeTab', pageName);
   }
   
   // Open the first tab by default
   document.addEventListener("DOMContentLoaded", () => {
-    document.querySelector('.tablink').click();
+    var activeTab = localStorage.getItem('activeTab');
+    if (activeTab) {
+      openPage(activeTab, document.getElementById(activeTab + 'Tab'));
+    } else {
+      document.querySelector('.tablink').click();
+    }
   });
   

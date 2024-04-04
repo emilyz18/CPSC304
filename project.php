@@ -1,4 +1,9 @@
 <?php
+session_start(); // Start the session at the very beginning of the file
+?>
+
+
+<?php
 // The preceding tag tells the web server to parse the following text as PHP
 // rather than HTML (the default)
 
@@ -55,13 +60,15 @@ connectToDB();
 	<hr />
 
 	<nav>
-		<button class="tablink" onclick="openPage('InsertUpdateDelete', this)">Insert/Update/Delete</button>
-		<button class="tablink" onclick="openPage('QueriesDisplays', this)">Queries/Displays</button>
+		<button class="tablink <?php echo ($_SESSION['activeTab'] == 'UserManagement') ? 'active' : ''; ?>" onclick="openPage('UserManagement', this)">User Management</button>
+		<button class="tablink <?php echo ($_SESSION['activeTab'] == 'DataDisplayQueries') ? 'active' : ''; ?>" onclick="openPage('DataDisplayQueries', this)">Data Display & Queries</button>
 	</nav>
+
+
 
 	<hr />
 
-	<div id="InsertUpdateDelete" class="tabcontent">
+	<div id="UserManagement" class="tabcontent">
 
 		<h2>Create New User</h2>
 		<form method="POST" action="project.php">
@@ -76,6 +83,7 @@ connectToDB();
 			<input type="submit" value="Insert" name="insertSubmit">
 			<?php
 				if (isset($_POST['insertSubmit'])) {
+					$_SESSION['activeTab'] = 'UserManagement';
 					if(connectToDB()) {
 						$Msg = handleInsertUserRequest();
 						echo "<div id='Messages'>$Msg</div>";
@@ -204,7 +212,7 @@ connectToDB();
 
 	</div>
 
-	<div id="QueriesDisplays" class="tabcontent">
+	<div id="DataDisplayQueries" class="tabcontent">
 	<hr />
 
 	<h2>Find accounts</h2>
@@ -217,6 +225,8 @@ connectToDB();
 		<p><input type="submit" value="Find" name="findSelection"></p>
 		<?php
 			if (isset($_POST['findSelection'])) {
+				$_SESSION['activeTab'] = 'DataDisplayQueries';
+				
 				$filter = $_POST['filter'];
 				handleSelectionRequest($filter);
 			}
@@ -244,6 +254,8 @@ connectToDB();
 
 		<?php
 		if (isset($_POST['selectedTable'])) {
+			$_SESSION['activeTab'] = 'DataDisplayQueries';
+			
 			$selectedTable = $_POST['selectedTable'];
 			$attributes = getAttributesForTable($selectedTable);
 			if ($attributes) {
@@ -262,6 +274,8 @@ connectToDB();
 		<p><input type="submit" value="Find" name="findProjection"></p>
 		<?php
 			if (isset($_POST['findProjection'])) {
+				$_SESSION['activeTab'] = 'DataDisplayQueries';
+				
 				if (!isset($_POST['selectedAttributes']) || empty($_POST['selectedAttributes'])) {
 						echo '<p style="color: red;">Please select at least one attribute.</p>';
 					} else {
@@ -283,6 +297,8 @@ connectToDB();
 		<p><input type="submit" value="Find" name="findJoin"></p>
 		<?php
 			if (isset($_POST['findJoin'])) {
+				$_SESSION['activeTab'] = 'DataDisplayQueries';
+
 				$dividend = $_POST['dividendInput'];
 				handleJoinRequest($dividend);
 			}
@@ -296,8 +312,9 @@ connectToDB();
 		<p><input type="submit" value="Find" name="find"></p>
 		<?php
 			if (isset($_POST['find'])) {
+				$_SESSION['activeTab'] = 'DataDisplayQueries';
+				
 				handleGroupByRequest();
-
 			}
 		?>
 	</form>
@@ -310,7 +327,9 @@ connectToDB();
 		<p><input type="submit" value="Find" name="find1"></p>
 		<?php
 			if (isset($_POST['find1'])) {
-			handleHavingRequest();
+				$_SESSION['activeTab'] = 'DataDisplayQueries';
+				
+				handleHavingRequest();
 			}
 		?>
 	</form>
@@ -323,6 +342,8 @@ connectToDB();
 		<p><input type="submit" value="Find" name="find2"></p>
 		<?php
 			if (isset($_POST['find2'])) {
+				$_SESSION['activeTab'] = 'DataDisplayQueries';
+				
 				handleNestedAggregationRequest();
 			}
 		?>
@@ -336,6 +357,8 @@ connectToDB();
 		<p><input type="submit" value="Find" name="find3"></p>
 		<?php
 			if (isset($_POST['find3'])) {
+				$_SESSION['activeTab'] = 'DataDisplayQueries';
+				
 				handleDivisionRequest();
 			}
 		?>
