@@ -1,5 +1,8 @@
 <?php
-session_start(); // Start the session at the very beginning of the file
+	session_start();
+	if (!isset($_SESSION['activeTab'])) {
+	$_SESSION['activeTab'] = 'UserManagement'; // Default to UserManagement
+	}
 ?>
 
 
