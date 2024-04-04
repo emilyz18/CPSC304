@@ -222,7 +222,7 @@ connectToDB();
 	<form method="POST" action="project.php">
         <input type="hidden" id="SelectionRequest" name="selectionRequest">
 
-		Filter (example: accountID like 'A%'): <input type="text" name="filter" required>
+		Filter (example: balance > 900): <input type="text" name="filter" required>
 
 
 		<p><input type="submit" value="Find" name="findSelection"></p>
@@ -405,16 +405,18 @@ connectToDB();
 
 		if (!$statement) {
 			echo "<br>Cannot parse the following command: " . $cmdstr . "<br>";
-			$e = OCI_Error($db_conn); // For oci_parse errors pass the connection handle
-			echo htmlentities($e['message']);
+			// $e = OCI_Error($db_conn); // For oci_parse errors pass the connection handle
+			// echo htmlentities($e['message']);
 			$success = False;
 		}
 
-		$r = oci_execute($statement, OCI_DEFAULT);
+		$r = @oci_execute($statement, OCI_DEFAULT);
 		if (!$r) {
-			echo "<br>Cannot execute the following command: " . $cmdstr . "<br>";
-			$e = oci_error($statement); // For oci_execute errors pass the statementhandle
-			echo htmlentities($e['message']);
+			// echo "<br>Cannot execute the following command: " . $cmdstr . "<br>";
+			// $e = oci_error($statement); // For oci_execute errors pass the statementhandle
+			// echo htmlentities($e['message']);
+			echo '<p style="color: red;">Error: Invalid filter.</p>';
+
 			$success = False;
 		}
 
@@ -844,7 +846,7 @@ connectToDB();
 
 		if ($result) {
 			echo "<br>AccountID<br>";
-			while ($row = oci_fetch_array($result, OCI_ASSOC)) {
+			while ($row = @oci_fetch_array($result, OCI_ASSOC)) {
 				echo $row['ACCOUNTID'] . "<br>";
 			}
 		} else {
