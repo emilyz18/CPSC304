@@ -7,31 +7,31 @@
 
 
 <?php
-// The preceding tag tells the web server to parse the following text as PHP
-// rather than HTML (the default)
+	// The preceding tag tells the web server to parse the following text as PHP
+	// rather than HTML (the default)
 
-// The following 3 lines allow PHP errors to be displayed along with the page
-// content. Delete or comment out this block when it's no longer needed.
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+	// The following 3 lines allow PHP errors to be displayed along with the page
+	// content. Delete or comment out this block when it's no longer needed.
+	ini_set('display_errors', 1);
+	ini_set('display_startup_errors', 1);
+	error_reporting(E_ALL);
 
-// Set some parameters
+	// Set some parameters
 
-// Database access configuration
-$config["dbuser"] = "ora_fangzh02";			// change "cwl" to your own CWL
-$config["dbpassword"] = "a72990732";	// change to 'a' + your student number
-$config["dbserver"] = "dbhost.students.cs.ubc.ca:1522/stu";
-$db_conn = NULL;	// login credentials are used in connectToDB()
+	// Database access configuration
+	$config["dbuser"] = "ora_fangzh02";			// change "cwl" to your own CWL
+	$config["dbpassword"] = "a72990732";	// change to 'a' + your student number
+	$config["dbserver"] = "dbhost.students.cs.ubc.ca:1522/stu";
+	$db_conn = NULL;	// login credentials are used in connectToDB()
 
-$success = true;	// keep track of errors so page redirects only if there are no errors
+	$success = true;	// keep track of errors so page redirects only if there are no errors
 
-$show_debug_alert_messages = False; // show which methods are being triggered (see debugAlertMessage())
+	$show_debug_alert_messages = False; // show which methods are being triggered (see debugAlertMessage())
 
-connectToDB();
+	connectToDB();
 
-// The next tag tells the web server to stop parsing the text as PHP. Use the
-// pair of tags wherever the content switches to PHP
+	// The next tag tells the web server to stop parsing the text as PHP. Use the
+	// pair of tags wherever the content switches to PHP
 ?>
 
 <!DOCTYPE html>
@@ -90,7 +90,7 @@ connectToDB();
 					if(connectToDB()) {
 						$Msg = handleInsertUserRequest();
 						echo "<div id='Messages'>$Msg</div>";
-						disconnectFromDB();
+						// disconnectFromDB();
 					}
 				}
 			?>
@@ -103,6 +103,7 @@ connectToDB();
 
 			<?php
 				if (isset($_POST['displayUserTable_Insert'])) {
+					$_SESSION['activeTab'] = 'UserManagement';
 					displayUserInfo();
 					displayUserContactInfo();
 				}
@@ -125,7 +126,7 @@ connectToDB();
 					if(connectToDB()) {
 						$Msg = handleInsertUserInFinancialRequest();
 						echo "<div id='Messages'>$Msg</div>";
-						disconnectFromDB();
+						// disconnectFromDB();
 					}
 				}
 			?>
@@ -163,7 +164,7 @@ connectToDB();
 					if(connectToDB()) {
 						$Msg = handleUpdateRequest();
 						echo "<div id='Messages'>$Msg</div>";
-						disconnectFromDB();
+						// disconnectFromDB();
 					}
 				}
 			?>
@@ -196,7 +197,7 @@ connectToDB();
 					if(connectToDB()) {
 						$Msg = handleDeleteRequest();
 						echo "<div id='Messages'>$Msg</div>";
-						disconnectFromDB();
+						// disconnectFromDB();
 					}
 				}
 			?>
