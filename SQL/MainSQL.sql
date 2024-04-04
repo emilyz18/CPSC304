@@ -176,6 +176,7 @@ CREATE TABLE Operates_Stock (
   FOREIGN KEY (stockID) REFERENCES Owns_PTC_Stock_Stock
 	ON DELETE CASCADE,
   FOREIGN KEY (accountID) REFERENCES Has_Account
+	ON DELETE CASCADE
 );
 
 CREATE TABLE Operates_Bond (
@@ -187,6 +188,7 @@ CREATE TABLE Operates_Bond (
   FOREIGN KEY (bondID) REFERENCES Bond
 	ON DELETE CASCADE,
   FOREIGN KEY (accountID) REFERENCES Has_Account
+	ON DELETE CASCADE
 );
 
 CREATE TABLE Includes_Stock(
@@ -212,9 +214,6 @@ CREATE TABLE Includes_Bond(
 );
 
 
-
-
----- INSERT DATA ----
 
 INSERT INTO Financial_Market_Hours (startingHour, endingHour) VALUES (TO_TIMESTAMP('1970-01-01 08:00:00', 'YYYY-MM-DD HH24:MI:SS'), TO_TIMESTAMP('1970-01-01 16:00:00', 'YYYY-MM-DD HH24:MI:SS'));
 INSERT INTO Financial_Market_Hours (startingHour, endingHour) VALUES (TO_TIMESTAMP('1970-01-01 09:00:00', 'YYYY-MM-DD HH24:MI:SS'), TO_TIMESTAMP('1970-01-01 17:00:00', 'YYYY-MM-DD HH24:MI:SS'));
@@ -357,4 +356,3 @@ INSERT INTO Includes_Bond(bondID, listID, accountID) VALUES ('1284984092', '2346
 INSERT INTO Includes_Bond(bondID, listID, accountID) VALUES ('8298390002', '2347', 'ACC8S9tUvW');
 INSERT INTO Includes_Bond(bondID, listID, accountID) VALUES ('9029883888', '2348', 'ACC6Nop7Qr');
 INSERT INTO Includes_Bond(bondID, listID, accountID) VALUES ('4564729000', '2349', 'ACC6Nop7Qr');
-
