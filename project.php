@@ -839,10 +839,22 @@
 	function handleSelectionRequest($filter)
 	{
 		global $db_conn;
+		$sqlKeywords = ['DROP', 'DELETE', 'UPDATE'];
+		$convertToUpperCase = strtoupper($filter);
+
+		foreach ($sqlKeywords as $keyword) {
+			if (strpos($convertToUpperCase, $keyword) !== false) {
+				$filter = str_ireplace($keyword, '', $filter);
+			}
+		}
+
+		$sanitizedFilter = preg_replace('/[^a-zA-Z0-9%_,><=\' ]/', '', $filter);
+
+
 		$result = executePlainSQL("
    		SELECT A.accountID
     	FROM Has_Account A
-		WHERE $filter
+		WHERE $sanitizedFilter
 		");
 
 		if ($result) {
