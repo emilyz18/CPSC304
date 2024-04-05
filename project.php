@@ -515,7 +515,7 @@
 		executePlainSQL("DROP TABLE INCLUDES_STOCK CASCADE CONSTRAINTS");
 		executePlainSQL("DROP TABLE INCLUDES_BOND CASCADE CONSTRAINTS");
 		
-		executeSQLScript('/home/f/fangzh02/public_html/MainSQL_Lite.sql');
+		executeSQLScript('/home/f/fangzh02/public_html/project_j6e3z_l7c1q_x7g0p/SQL/MainSQL.sql');
 		
 		echo "<br> Reset Done! <br>";
 
