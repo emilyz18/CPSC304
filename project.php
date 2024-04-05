@@ -281,7 +281,7 @@
 				$_SESSION['activeTab'] = 'DataDisplayQueries';
 				
 				if (!isset($_POST['selectedAttributes']) || empty($_POST['selectedAttributes'])) {
-						echo '<p style="color: red;">Please select at least one attribute.</p>';
+						echo '<p>Please select at least one attribute.</p>';
 					} else {
 						$selectedAttributes = $_POST['selectedAttributes'];
 						$selectedTable = $_POST['selectedTable'];
@@ -416,7 +416,7 @@
 			// echo "<br>Cannot execute the following command: " . $cmdstr . "<br>";
 			// $e = oci_error($statement); // For oci_execute errors pass the statementhandle
 			// echo htmlentities($e['message']);
-			echo '<p style="color: red;">Error: Invalid filter.</p>';
+			echo '<p>Error: Invalid filter.</p>';
 
 			$success = False;
 		}
@@ -859,7 +859,7 @@
 		");
 
 		if ($result) {
-			echo "<br>AccountID<br>";
+			echo "<br><b>AccountID</b><br>";
 			while ($row = @oci_fetch_array($result, OCI_ASSOC)) {
 				echo $row['ACCOUNTID'] . "<br>";
 			}
@@ -908,7 +908,7 @@
 		");
 
 		if ($result) {
-			echo "<br>accountName<br>";
+			echo "<br><b>accountName</b><br>";
 			while ($row = oci_fetch_array($result, OCI_ASSOC)) {
 				echo $row['ACCOUNTNAME'] . "<br>";
 			}
@@ -928,7 +928,7 @@
 		Group by O.accountID
 		");
 		if ($result) {
-			echo "<br>AccountID | Highest Price<br>";
+			echo "<br><b>AccountID | Highest Price</b><br>";
 			while ($row = oci_fetch_array($result, OCI_ASSOC)) {
 				echo $row['ACCOUNTID'] . " | " . $row['HIGHEST_PRICE'] . "<br>";
 			}
@@ -949,7 +949,7 @@
 		Having O.accountID LIKE 'A%'
 		");
 		if ($result) {
-			echo "<br>AccountID | Lowest Price<br>";
+			echo "<br><b>AccountID | Lowest Price</b><br>";
 			while ($row = oci_fetch_array($result, OCI_ASSOC)) {
 				echo $row['ACCOUNTID'] . " | " . $row['LOWEST_PRICE'] . "<br>";
 			}
@@ -974,7 +974,7 @@
 		From Temp T2)
 		");
 		if ($result) {
-			echo "<br>AccountID | Lowest Average<br>";
+			echo "<br><b>AccountID | Lowest Average</b><br>";
 			while ($row = oci_fetch_array($result, OCI_ASSOC)) {
 				echo $row['ACCOUNTID'] . " | " . $row['AVERAGE'] . "<br>";
 			}
@@ -1003,7 +1003,7 @@
 		)
 		");
 		if ($result) {
-			echo "<br>AccountID<br>";
+			echo "<br><b>AccountID</b><br>";
 			while ($row = oci_fetch_array($result, OCI_ASSOC)) {
 				echo $row['ACCOUNTID'] ."<br>";
 			}
