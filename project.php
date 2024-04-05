@@ -491,6 +491,7 @@
 	{
 		global $db_conn;
 
+
 		// executePlainSQL("DROP TABLE FINANCIAL_MARKET_HOURS CASCADE CONSTRAINTS");
 		// executePlainSQL("DROP TABLE FINANCIAL_MARKET_INFO CASCADE CONSTRAINTS");
 		// executePlainSQL("DROP TABLE STOCK_MARKET CASCADE CONSTRAINTS");
@@ -515,7 +516,7 @@
 		// executePlainSQL("DROP TABLE INCLUDES_STOCK CASCADE CONSTRAINTS");
 		// executePlainSQL("DROP TABLE INCLUDES_BOND CASCADE CONSTRAINTS");
 		
-		executeSQLScript('/home/f/fangzh02/public_html/project_j6e3z_l7c1q_x7g0p/SQL/MainSQL.sql');
+		executeSQLScript('./SQL/MainSQL.sql');
 		
 		echo "<br> Reset Done! <br>";
 
