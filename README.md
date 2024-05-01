@@ -1,8 +1,6 @@
-# CPSC304 Project
-Two assertions are needed for our project but we did not implement: 
+# CPSC304 Database Project
+Website: https://www.students.cs.ubc.ca/~emilyz18/project_j6e3z_l7c1q_x7g0p/project.php
 
-CREATE ASSERTION totalStock CHECK (NOT EXISTS ((SELECT stockID FROM Stock) EXCEPT (SELECT stockID FROM Have_Stock)));
-
-CREATE ASSERTION totalBond CHECK (NOT EXISTS ((SELECT bondID FROM Bond) MINUS (SELECT bondID FROM Have_Bond)));
-
-The first assertion checks the participation constraint for the entity set Stock and the other one checks the participation constraint for the entity set Bond.
+### Description
+This project is an investment management system that specializes in the bond market and the stock
+market. Our database is specifically designed to handle data related to publicly traded company stocks and bonds issued by both corporations and governments. Currently, this project enables users to input and manage their information, specify their financial market preferences, update their details, and remove their data from the database. Users can also search for accounts based on their criteria, review attributes across different tables in the database, and execute various queries.
